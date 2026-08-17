@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="sidecar.css">
+<style>
+body{width:376px;height:530px;overflow:hidden;position:relative}
+.glow.a{width:260px;height:260px;background:radial-gradient(circle,rgba(95,227,192,.30),transparent 70%);top:-90px;left:-70px}
+.glow.b{width:220px;height:220px;background:radial-gradient(circle,rgba(109,238,134,.22),transparent 70%);bottom:-90px;right:-70px}
+.shell{position:relative;z-index:2;height:100%;display:flex;flex-direction:column}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.radar-row{display:flex;align-items:center;gap:9px;font-size:8px;color:var(--muted)}
+.tabs{display:flex;gap:2px;padding:10px 16px 0}
+.tab{flex:1;padding:9px;border-radius:10px 10px 0 0;font-family:var(--m);font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);transition:.3s var(--ease);border-bottom:1px solid var(--line)}
+.tab.on{color:var(--paper);border-bottom:1px solid var(--mint);background:rgba(255,255,255,.04)}
+.pane{flex:1;overflow:auto;padding:16px;display:none}
+.pane.on{display:block;animation:in .35s var(--ease)}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+.card{border-radius:18px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.13);
+  box-shadow:0 22px 50px -22px rgba(0,0,0,.8),var(--spec);min-height:206px;display:flex;flex-direction:column;
+  justify-content:flex-end;padding:16px;background-size:cover;background-position:center}
+.card .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,9,10,.35),rgba(7,9,10,.94))}
+.card > *{position:relative;z-index:2}
+.chip{align-self:flex-start;font-family:var(--m);font-size:8px;letter-spacing:.2em;text-transform:uppercase;
+  padding:5px 10px;border-radius:100px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);margin-bottom:10px}
+.card h3{font-size:18px;font-weight:800;line-height:1.1;letter-spacing:-.03em;margin-bottom:7px}
+.card p{font-size:11.5px;color:var(--muted);line-height:1.45}
+.takebox{margin-top:12px;padding:13px 14px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.takebox b{display:block;font-family:var(--m);font-size:8px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--mint);margin-bottom:7px;font-weight:400}
+.takebox p{font-family:var(--s);font-size:14.5px;line-height:1.35}
+.vote{margin-top:12px}
+.vote-btns{display:flex;gap:8px}
+.vote-res{display:none}
+.vote.done .vote-btns{display:none}
+.vote.done .vote-res{display:block}
+.vline{font-family:var(--m);font-size:9px;color:var(--mint);margin-top:7px;letter-spacing:.06em}
+.actions{display:flex;gap:8px;margin-top:12px}
+.mini{flex:1;padding:11px;border-radius:12px;border:1px solid var(--line);font-family:var(--m);font-size:9px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);transition:.3s var(--ease)}
+.mini:hover{color:var(--ink);background:var(--paper);border-color:transparent}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.clip{border-radius:13px;overflow:hidden;position:relative;height:104px;border:1px solid var(--line);
+  background-size:cover;background-position:center;animation:in .3s var(--ease)}
+.clip .fmt{position:absolute;top:6px;left:6px;font-family:var(--m);font-size:7px;letter-spacing:.14em;
+  text-transform:uppercase;padding:4px 7px;border-radius:100px;background:rgba(7,9,10,.7);color:var(--mint);backdrop-filter:blur(6px)}
+.clip .ttl{position:absolute;inset:auto 0 0 0;padding:9px;font-size:10px;font-weight:600;line-height:1.25;
+  background:linear-gradient(transparent,rgba(7,9,10,.95));max-height:52px;overflow:hidden}
+.clip .x{position:absolute;top:6px;right:6px;width:19px;height:19px;border-radius:50%;background:rgba(7,9,10,.75);
+  color:var(--paper);font-size:11px;line-height:19px;text-align:center;opacity:0;transition:.25s}
+.clip:hover .x{opacity:1}
+.empty{grid-column:1/-1;padding:40px 10px;text-align:center;font-family:var(--m);font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);line-height:2.3}
+footer{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-top:1px solid var(--line);
+  font-family:var(--m);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+footer em{color:var(--mint);font-style:normal}
+footer button:hover{color:var(--paper)}
+</style>
+</head>
+<body>
+<div class="glow a"></div><div class="glow b"></div>
+<div class="shell">
+  <header>
+    <div class="mark"><span class="gs"><i class="g"></i><i class="g o"></i><i class="g"></i></span> SIDECAR</div>
+    <div class="radar-row mono">Ad Radar <div class="tog" id="tog"></div></div>
+  </header>
+  <div class="tabs">
+    <button class="tab on" data-p="today">Today</button>
+    <button class="tab" data-p="file">Swipe file</button>
+  </div>
+  <div class="pane on" id="today"></div>
+  <div class="pane" id="file"><div class="grid" id="grid"></div></div>
+  <footer>
+    <span><em id="streak">0</em> day streak</span>
+    <span><em id="count">0</em> clipped</span>
+    <button id="export">Export ↓</button>
+  </footer>
+</div>
+<script src="cards.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>

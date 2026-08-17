@@ -1,0 +1,53 @@
+/* M/O/M Sidecar — shared shell */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Instrument+Serif:ital@0;1&family=Azeret+Mono:wght@300;400;500&display=swap');
+
+:root{
+  --ink:#07090A; --ink-2:#0D1112; --paper:#F1F4F0;
+  --muted:rgba(241,244,240,.56); --faint:rgba(241,244,240,.30);
+  --mint:#5FE3C0; --spring:#6DEE86; --acid:#C9FF6B;
+  --grad:linear-gradient(102deg,#5FE3C0,#6DEE86);
+  --line:rgba(241,244,240,.12);
+  --glass:linear-gradient(157deg,rgba(255,255,255,.11),rgba(255,255,255,.028));
+  --spec:inset 0 1px 0 rgba(255,255,255,.30);
+  --ease:cubic-bezier(.22,1,.36,1);
+  --d:'Archivo',sans-serif; --s:'Instrument Serif',serif; --m:'Azeret Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--paper);font-family:var(--d);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--mint);color:#04120E}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-thumb{background:rgba(241,244,240,.18);border-radius:9px}
+
+.glow{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
+.mono{font-family:var(--m);letter-spacing:.18em;text-transform:uppercase}
+
+.mark{display:flex;align-items:center;gap:7px;font-weight:900;font-size:11px;letter-spacing:-.01em}
+.mark .gs{display:flex;gap:2px}
+.mark .g{width:11px;height:11px;border-radius:2px;background:var(--grad);position:relative;overflow:hidden}
+.mark .g::after{content:'';position:absolute;inset:1.5px;background:var(--ink);border-radius:1px;
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 62%,0 100%)}
+.mark .g.o::after{clip-path:none}
+
+.tog{width:34px;height:19px;border-radius:100px;background:rgba(255,255,255,.14);position:relative;
+  transition:.35s var(--ease);flex:none}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;
+  background:var(--paper);transition:.35s var(--ease)}
+.tog.on{background:var(--grad)}
+.tog.on::after{left:17px;background:#04120E}
+
+.vb{flex:1;padding:12px 8px;border-radius:13px;background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.15);font-family:var(--m);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;transition:.3s var(--ease)}
+.vb:hover{background:rgba(255,255,255,.16);transform:translateY(-2px)}
+.vb.sharp:hover{border-color:var(--spring);color:var(--spring)}
+.vb.meh:hover{border-color:#FF8B6B;color:#FF8B6B}
+.bar{height:30px;border-radius:11px;overflow:hidden;display:flex;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14)}
+.bar i{display:flex;align-items:center;padding:0 10px;font-family:var(--m);font-size:10px;font-style:normal;
+  width:0;transition:width 1s var(--ease);white-space:nowrap;overflow:hidden}
+.bar .s{background:var(--grad);color:#04120E;font-weight:500}
+.bar .m{background:rgba(255,255,255,.07);color:var(--muted);justify-content:flex-end}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>New Tab · M/O/M</title>
+<link rel="stylesheet" href="sidecar.css">
+<style>
+body{min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column}
+.glow.a{width:52vw;height:52vw;background:radial-gradient(circle,rgba(95,227,192,.34),transparent 68%);top:-16%;left:-10%}
+.glow.b{width:44vw;height:44vw;background:radial-gradient(circle,rgba(109,238,134,.26),transparent 68%);bottom:-18%;right:-8%}
+.grain{position:fixed;inset:-60px;z-index:50;pointer-events:none;opacity:.24;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+.wrap{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;
+  padding:26px clamp(20px,5vw,64px) 40px;max-width:1240px;margin:0 auto;width:100%}
+nav{display:flex;justify-content:space-between;align-items:center;font-size:9px;color:var(--faint)}
+nav .r{display:flex;gap:20px;align-items:center}
+nav em{color:var(--mint);font-style:normal}
+.search{margin:clamp(26px,6vh,60px) 0 clamp(22px,4vh,40px);display:flex;align-items:center;gap:10px;
+  padding:5px 5px 5px 22px;border-radius:100px;background:var(--glass);
+  border:1px solid rgba(255,255,255,.13);box-shadow:var(--spec),0 20px 50px -24px rgba(0,0,0,.9);
+  backdrop-filter:blur(22px) saturate(170%);transition:.4s var(--ease);max-width:620px}
+.search:focus-within{border-color:rgba(95,227,192,.6);box-shadow:var(--spec),0 0 0 4px rgba(95,227,192,.08)}
+.search input{flex:1;background:none;border:none;outline:none;color:var(--paper);font-family:var(--m);
+  font-size:12px;padding:14px 0;letter-spacing:.04em}
+.search input::placeholder{color:var(--faint)}
+.search button{padding:12px 20px;border-radius:100px;background:var(--grad);color:#04120E;font-family:var(--m);
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;transition:.3s var(--ease)}
+.search button:hover{filter:brightness(1.12)}
+.stage{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(20px,3.5vw,48px);align-items:center;flex:1}
+@media(max-width:900px){.stage{grid-template-columns:1fr}}
+.hero-card{border-radius:26px;overflow:hidden;position:relative;min-height:min(58vh,440px);display:flex;
+  flex-direction:column;justify-content:flex-end;padding:clamp(20px,3vw,34px);border:1px solid rgba(255,255,255,.13);
+  box-shadow:0 34px 80px -30px rgba(0,0,0,.9),var(--spec);background-size:cover;background-position:center;
+  animation:up .9s var(--ease) both}
+@keyframes up{from{opacity:0;transform:translateY(26px) scale(.99);filter:blur(10px)}}
+.hero-card .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,9,10,.30) 0%,rgba(7,9,10,.05) 30%,rgba(7,9,10,.90) 78%,rgba(7,9,10,.97) 100%)}
+.hero-card > *{position:relative;z-index:2}
+.chip{align-self:flex-start;font-family:var(--m);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  padding:6px 12px;border-radius:100px;background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(10px);margin-bottom:14px}
+.hero-card h1{font-weight:900;font-size:clamp(26px,3.4vw,44px);line-height:1;letter-spacing:-.04em;
+  margin-bottom:12px;max-width:18ch}
+.hero-card p{font-size:14px;color:var(--muted);line-height:1.5;max-width:48ch}
+.side{display:flex;flex-direction:column;gap:16px;animation:up .9s .12s var(--ease) both}
+.take{padding:clamp(18px,2.4vw,26px);border-radius:20px;background:var(--glass);
+  border:1px solid rgba(255,255,255,.13);box-shadow:var(--spec);backdrop-filter:blur(22px) saturate(170%);
+  position:relative;overflow:hidden}
+.take::before{content:'';position:absolute;top:-50%;left:-25%;width:60%;height:200%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:rotate(18deg);
+  animation:sheen 8s var(--ease) infinite}
+@keyframes sheen{0%,72%{left:-45%}100%{left:130%}}
+.take b{display:block;font-family:var(--m);font-size:9px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--mint);margin-bottom:12px;font-weight:400}
+.take p{font-family:var(--s);font-size:clamp(17px,2vw,23px);line-height:1.32}
+.q{font-family:var(--m);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:10px}
+.vote-btns{display:flex;gap:10px}
+.vote-res{display:none}
+.vote.done .vote-btns{display:none}
+.vote.done .vote-res{display:block;animation:up .5s var(--ease)}
+.vline{font-family:var(--m);font-size:10px;color:var(--mint);margin-top:9px;letter-spacing:.06em}
+.streak{display:flex;justify-content:space-between;align-items:center;padding:15px 20px;border-radius:16px;
+  border:1px solid var(--line);font-family:var(--m);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.streak b{font-family:var(--d);font-weight:900;font-size:20px;letter-spacing:-.03em;background:var(--grad);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.row{display:flex;gap:10px}
+.mini{flex:1;padding:13px;border-radius:13px;border:1px solid var(--line);font-family:var(--m);font-size:9px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);transition:.3s var(--ease)}
+.mini:hover{color:#04120E;background:var(--paper);border-color:transparent}
+footer{display:flex;justify-content:space-between;font-family:var(--m);font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);padding-top:26px;margin-top:20px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="glow a"></div><div class="glow b"></div><div class="grain"></div>
+<div class="wrap">
+  <nav>
+    <div class="mark"><span class="gs"><i class="g"></i><i class="g o"></i><i class="g"></i></span> MAD OVER MARKETING</div>
+    <div class="r mono">
+      <span><em id="clipCt">0</em> clipped</span>
+      <span><em id="streakTop">0</em> day streak</span>
+      <span id="clock">00:00 IST</span>
+    </div>
+  </nav>
+  <div class="search">
+    <input id="q" placeholder="Search, or just judge something first" autofocus>
+    <button id="goSearch">Go</button>
+  </div>
+  <div class="stage">
+    <div class="hero-card" id="hero"></div>
+    <div class="side">
+      <div class="take"><b>M/O/M's take</b><p id="takeTxt"></p></div>
+      <div>
+        <div class="q">One card. One verdict. Then get on with your day.</div>
+        <div class="vote" id="vote">
+          <div class="vote-btns">
+            <button class="vb sharp" data-v="sharp">Sharp</button>
+            <button class="vb meh" data-v="meh">Meh</button>
+          </div>
+          <div class="vote-res">
+            <div class="bar"><i class="s">Sharp <b style="margin-left:6px"></b></i><i class="m">Meh</i></div>
+            <div class="vline"></div>
+          </div>
+        </div>
+      </div>
+      <div class="streak"><span>Verdict streak</span><b id="streakBig">0</b></div>
+      <div class="row">
+        <button class="mini" id="next">Next card →</button>
+        <button class="mini" id="save">Save to file</button>
+      </div>
+    </div>
+  </div>
+  <footer><span>M/O/M Sidecar · prototype</span><span id="dateline"></span></footer>
+</div>
+<script src="cards.js"></script>
+<script src="newtab.js"></script>
+</body>
+</html>
