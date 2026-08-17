@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>M/O/M — Mad Over Marketing</title>
+<meta name="description" content="Adland, with an opinion. A living feed for people who are mad over marketing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Instrument+Serif:ital@0;1&family=Azeret+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────
+   M/O/M — design tokens
+   ink canvas · mint light · glass that behaves like glass
+   ───────────────────────────────────────────────────────────── */
+:root{
+  --ink:#07090A; --ink-2:#0D1112;
+  --paper:#F1F4F0; --muted:rgba(241,244,240,.56); --faint:rgba(241,244,240,.30);
+  --mint:#5FE3C0; --spring:#6DEE86; --acid:#C9FF6B;
+  --grad:linear-gradient(102deg,#5FE3C0 0%,#6DEE86 100%);
+  --line:rgba(241,244,240,.12);
+  --glass:linear-gradient(157deg,rgba(255,255,255,.11),rgba(255,255,255,.028));
+  --glass-brd:1px solid rgba(255,255,255,.13);
+  --spec:inset 0 1px 0 rgba(255,255,255,.30), inset 0 -1px 0 rgba(255,255,255,.05);
+  --lift:0 24px 70px -20px rgba(0,0,0,.75);
+  --ease:cubic-bezier(.22,1,.36,1);
+  --ease-io:cubic-bezier(.65,0,.35,1);
+  --gut:clamp(20px,5vw,80px);
+  --d:'Archivo',sans-serif; --s:'Instrument Serif',serif; --m:'Azeret Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--ink);color:var(--paper);font-family:var(--d);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.45}
+::selection{background:var(--mint);color:#04120E}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+a{color:inherit;text-decoration:none}
+
+.grain{position:fixed;inset:-60px;z-index:9000;pointer-events:none;opacity:.30;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  animation:grain 5.5s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-12px,7px)}40%{transform:translate(9px,-11px)}60%{transform:translate(-7px,-6px)}80%{transform:translate(11px,9px)}100%{transform:translate(0,0)}}
+
+/* ── custom cursor: a little glass lens ─────────────────────── */
+.lens{position:fixed;top:0;left:0;width:34px;height:34px;border-radius:50%;z-index:8000;pointer-events:none;
+  border:1px solid rgba(255,255,255,.5);backdrop-filter:blur(1px) saturate(180%) brightness(1.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 6px 20px rgba(0,0,0,.35);
+  transition:width .35s var(--ease),height .35s var(--ease),background .35s,border-color .35s;
+  transform:translate(-50%,-50%)}
+.lens.big{width:88px;height:88px;background:rgba(95,227,192,.13);border-color:rgba(95,227,192,.55)}
+.lens.dot{width:10px;height:10px;background:var(--paper);border-color:transparent}
+.lens-label{position:fixed;z-index:8001;pointer-events:none;font-family:var(--m);font-size:9px;letter-spacing:.18em;
+  text-transform:uppercase;transform:translate(-50%,-50%);opacity:0;transition:opacity .25s;color:var(--mint)}
+.lens-label.on{opacity:1}
+@media (hover:none),(max-width:860px){.lens,.lens-label{display:none}}
+
+/* ── preloader ──────────────────────────────────────────────── */
+#boot{position:fixed;inset:0;z-index:9500;background:var(--ink);display:grid;place-items:center;
+  transition:clip-path 1.1s var(--ease);clip-path:inset(0 0 0 0)}
+#boot.out{clip-path:inset(0 0 100% 0)}
+.boot-mark{display:flex;gap:10px}
+.boot-mark span{font-weight:900;font-size:clamp(46px,9vw,110px);line-height:1;font-variation-settings:'wdth' 120;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  opacity:0;transform:translateY(30px) rotateX(-60deg);animation:bootIn .7s var(--ease) forwards}
+.boot-mark span:nth-child(2){animation-delay:.11s}
+.boot-mark span:nth-child(3){animation-delay:.22s}
+@keyframes bootIn{to{opacity:1;transform:none}}
+.boot-line{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);width:min(280px,50vw);height:1px;background:var(--line);overflow:hidden}
+.boot-line i{position:absolute;inset:0;background:var(--grad);transform:translateX(-100%);animation:bootBar 1.2s .25s var(--ease-io) forwards}
+@keyframes bootBar{to{transform:translateX(0)}}
+.boot-cap{position:absolute;bottom:9%;left:50%;transform:translateX(-50%);font-family:var(--m);font-size:10px;
+  letter-spacing:.3em;color:var(--faint);text-transform:uppercase}
+
+/* ── nav ────────────────────────────────────────────────────── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:600;display:flex;align-items:center;justify-content:space-between;
+  padding:14px var(--gut);transition:transform .5s var(--ease),background .5s,backdrop-filter .5s}
+.nav.stuck{background:rgba(7,9,10,.55);backdrop-filter:blur(22px) saturate(170%);border-bottom:1px solid var(--line)}
+.nav.hide{transform:translateY(-110%)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:900;font-size:15px;letter-spacing:-.02em;font-variation-settings:'wdth' 115}
+.brand .glyphs{display:flex;gap:3px}
+.brand .g{width:15px;height:15px;border-radius:3px;background:var(--grad);position:relative;overflow:hidden;transition:.3s}
+.brand .g::after{content:'';position:absolute;inset:2px;background:var(--ink);border-radius:1.5px;
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 62%,0 100%)}
+.brand .g.o::after{clip-path:none}
+.brand:hover .g{animation:wiggle .5s var(--ease)}
+.brand:hover .g:nth-child(2){animation-delay:.06s}
+.brand:hover .g:nth-child(3){animation-delay:.12s}
+@keyframes wiggle{50%{transform:translateY(-5px) rotate(-8deg)}}
+.nav-mid{display:flex;gap:2px;padding:4px;border-radius:100px;background:var(--glass);border:var(--glass-brd);
+  box-shadow:var(--spec);backdrop-filter:blur(18px) saturate(160%)}
+.nav-mid a{font-family:var(--m);font-size:10px;letter-spacing:.16em;text-transform:uppercase;padding:8px 15px;
+  border-radius:100px;color:var(--muted);transition:.3s var(--ease)}
+.nav-mid a:hover{color:var(--ink);background:var(--paper)}
+@media(max-width:900px){.nav-mid{display:none}}
+.swipe-btn{display:flex;align-items:center;gap:9px;padding:9px 16px;border-radius:100px;background:var(--glass);
+  border:var(--glass-brd);box-shadow:var(--spec);backdrop-filter:blur(18px) saturate(160%);
+  font-family:var(--m);font-size:10px;letter-spacing:.16em;text-transform:uppercase;transition:.35s var(--ease)}
+.swipe-btn:hover{background:var(--paper);color:var(--ink);border-color:transparent}
+.swipe-btn b{min-width:20px;height:20px;display:grid;place-items:center;border-radius:100px;background:var(--grad);
+  color:#04120E;font-weight:800;font-size:11px;transition:transform .4s var(--ease)}
+.swipe-btn b.pop{transform:scale(1.5)}
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--grad);z-index:700;width:0;box-shadow:0 0 14px rgba(109,238,134,.7)}
+
+/* ── hero ───────────────────────────────────────────────────── */
+.hero{min-height:100svh;position:relative;display:flex;flex-direction:column;justify-content:center;
+  padding:120px var(--gut) 90px;overflow:hidden}
+.aurora{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;will-change:transform}
+#a1{width:52vw;height:52vw;background:radial-gradient(circle,rgba(95,227,192,.5),transparent 68%);top:-14%;left:-8%}
+#a2{width:44vw;height:44vw;background:radial-gradient(circle,rgba(109,238,134,.42),transparent 68%);bottom:-18%;right:-6%}
+#a3{width:30vw;height:30vw;background:radial-gradient(circle,rgba(201,255,107,.20),transparent 70%);top:38%;left:52%}
+.hero-grid{position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:100% 88px,calc(100%/6) 100%;
+  -webkit-mask-image:radial-gradient(circle at 50% 45%,#000,transparent 78%);
+  mask-image:radial-gradient(circle at 50% 45%,#000,transparent 78%)}
+.hero-inner{position:relative;z-index:2;max-width:1400px;margin:0 auto;width:100%}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--m);font-size:10px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--mint);margin-bottom:26px}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--spring);box-shadow:0 0 0 0 rgba(109,238,134,.7);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 12px rgba(109,238,134,0)}100%{box-shadow:0 0 0 0 rgba(109,238,134,0)}}
+h1.mega{font-weight:900;font-size:clamp(52px,10.5vw,178px);line-height:.86;letter-spacing:-.045em;
+  font-variation-settings:'wdth' 108;text-transform:uppercase}
+h1.mega .ln{display:block;overflow:hidden}
+h1.mega .ln > i{display:block;font-style:normal;transform:translateY(105%);animation:rise 1.05s var(--ease) forwards}
+h1.mega .ln:nth-child(2) > i{animation-delay:.09s}
+h1.mega .ln:nth-child(3) > i{animation-delay:.18s}
+@keyframes rise{to{transform:none}}
+.swap{position:relative;display:inline-block;font-family:var(--s);font-style:italic;font-weight:400;
+  text-transform:none;letter-spacing:-.01em}
+.swap span{display:inline-block;background:var(--grad);-webkit-background-clip:text;background-clip:text;
+  color:transparent;transition:transform .6s var(--ease),opacity .5s,filter .5s}
+.swap span.out{transform:translateY(-70%) rotateX(70deg);opacity:0;filter:blur(6px);position:absolute;left:0;top:0}
+.swap span.in{animation:swapIn .7s var(--ease)}
+@keyframes swapIn{from{transform:translateY(70%) rotateX(-70deg);opacity:0;filter:blur(6px)}}
+.fs{font-family:var(--s);font-style:normal;color:var(--mint)}
+.hero-foot{margin-top:clamp(34px,6vh,64px);display:flex;flex-wrap:wrap;gap:34px;align-items:flex-end;justify-content:space-between}
+.hero-copy{max-width:44ch;color:var(--muted);font-size:clamp(15px,1.3vw,18px);opacity:0;animation:fade 1s .6s forwards}
+.hero-copy b{color:var(--paper);font-weight:600}
+@keyframes fade{to{opacity:1}}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;opacity:0;animation:fade 1s .78s forwards}
+.btn{position:relative;padding:15px 28px;border-radius:100px;font-family:var(--m);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;overflow:hidden;transition:.4s var(--ease);white-space:nowrap}
+.btn.solid{background:var(--paper);color:var(--ink);font-weight:500}
+.btn.solid::before{content:'';position:absolute;inset:0;background:var(--grad);transform:translateY(101%);transition:transform .45s var(--ease)}
+.btn.solid:hover::before{transform:none}
+.btn.solid span{position:relative;z-index:2}
+.btn.ghost{background:var(--glass);border:var(--glass-brd);box-shadow:var(--spec);backdrop-filter:blur(18px)}
+.btn.ghost:hover{border-color:rgba(95,227,192,.6);color:var(--mint)}
+.ticker{position:absolute;bottom:0;left:0;right:0;z-index:3;border-top:1px solid var(--line);
+  background:rgba(7,9,10,.5);backdrop-filter:blur(16px);display:flex;align-items:center;height:46px;overflow:hidden}
+.ticker-tag{flex:none;height:100%;display:flex;align-items:center;gap:8px;padding:0 18px;background:var(--grad);
+  color:#04120E;font-family:var(--m);font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:500}
+.ticker-tag .pulse{background:#04120E;box-shadow:none;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.15}}
+.ticker-track{display:flex;white-space:nowrap;animation:march 46s linear infinite}
+.ticker:hover .ticker-track{animation-play-state:paused}
+@keyframes march{to{transform:translateX(-50%)}}
+.ticker-item{font-family:var(--m);font-size:11px;color:var(--muted);padding:0 24px;display:inline-flex;align-items:center;gap:12px}
+.ticker-item em{color:var(--mint);font-style:normal}
+.ticker-item::after{content:'';width:4px;height:4px;border-radius:50%;background:var(--faint)}
+
+/* ── section furniture ──────────────────────────────────────── */
+.sec{position:relative;padding:clamp(90px,13vh,150px) var(--gut)}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap;margin-bottom:clamp(34px,6vh,64px)}
+.sec-no{font-family:var(--m);font-size:10px;letter-spacing:.3em;color:var(--mint);text-transform:uppercase;display:block;margin-bottom:16px}
+h2{font-weight:900;font-size:clamp(34px,5.6vw,86px);line-height:.92;letter-spacing:-.04em;text-transform:uppercase;
+  font-variation-settings:'wdth' 104;max-width:16ch}
+h2 em{font-family:var(--s);font-style:italic;font-weight:400;text-transform:none;letter-spacing:-.01em;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sec-note{max-width:32ch;color:var(--muted);font-size:14px;border-left:1px solid var(--line);padding-left:18px}
+.rv{opacity:0;transform:translateY(38px);filter:blur(8px);
+  transition:opacity 1s var(--ease),transform 1s var(--ease),filter 1s var(--ease)}
+.rv.on{opacity:1;transform:none;filter:none}
+
+/* ── THE REEL ───────────────────────────────────────────────── */
+#reel{padding:0;height:100svh;position:relative;overflow:hidden;border-block:1px solid var(--line)}
+.reel-bg{position:absolute;inset:-25%;filter:blur(110px);opacity:.34;transition:background 1.1s var(--ease-io);z-index:0}
+.reel-scroll{position:relative;z-index:2;height:100%;overflow-y:auto;scroll-snap-type:y mandatory;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.reel-scroll::-webkit-scrollbar{display:none}
+.slide{height:100svh;scroll-snap-align:start;scroll-snap-stop:always;display:grid;place-items:center;position:relative;padding:74px 0}
+.gutter{position:absolute;left:var(--gut);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;
+  gap:12px;max-width:230px;pointer-events:none;z-index:4}
+.gutter .idx{font-weight:900;font-size:clamp(60px,7vw,110px);line-height:.8;letter-spacing:-.05em;
+  color:transparent;-webkit-text-stroke:1px rgba(241,244,240,.28)}
+.gutter .cat{font-family:var(--m);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--mint)}
+.gutter .meta{font-family:var(--m);font-size:10px;color:var(--faint);line-height:1.9}
+@media(max-width:1180px){.gutter{display:none}}
+.card{width:min(88vw,392px);height:min(78svh,700px);position:relative;perspective:1600px}
+.card-in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .9s var(--ease)}
+.card.flip .card-in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:26px;overflow:hidden;
+  border:var(--glass-brd);box-shadow:var(--lift),var(--spec);background:var(--ink-2)}
+.face.back{transform:rotateY(180deg);padding:34px 30px;display:flex;flex-direction:column;justify-content:space-between}
+.art{position:absolute;inset:0}
+.art svg{width:100%;height:100%;display:block}
+.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,9,10,.45) 0%,rgba(7,9,10,.06) 34%,rgba(7,9,10,.86) 76%,rgba(7,9,10,.97) 100%)}
+.card-body{position:absolute;inset:auto 0 0 0;padding:28px 26px 26px;z-index:3}
+.chip{display:inline-flex;align-items:center;gap:7px;font-family:var(--m);font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;padding:6px 11px;border-radius:100px;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(10px);margin-bottom:14px}
+.card h3{font-weight:800;font-size:clamp(23px,4.4vw,31px);line-height:1.03;letter-spacing:-.035em;margin-bottom:11px}
+.dek{font-size:13.5px;color:var(--muted);line-height:1.5;max-width:34ch}
+.card-top{position:absolute;top:0;left:0;right:0;padding:20px 22px;display:flex;justify-content:space-between;align-items:center;z-index:3}
+.stamp{font-family:var(--m);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.vote{margin-top:18px}
+.vote-btns{display:flex;gap:9px}
+.vb{flex:1;padding:13px 8px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);
+  backdrop-filter:blur(14px);font-family:var(--m);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  transition:.3s var(--ease)}
+.vb:hover{background:rgba(255,255,255,.16);transform:translateY(-2px)}
+.vb.sharp:hover{border-color:var(--spring);color:var(--spring)}
+.vb.meh:hover{border-color:#FF8B6B;color:#FF8B6B}
+.vote-res{display:none}
+.vote.done .vote-btns{display:none}
+.vote.done .vote-res{display:block;animation:fade .5s}
+.bar{height:32px;border-radius:12px;overflow:hidden;display:flex;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.bar i{display:flex;align-items:center;padding:0 11px;font-family:var(--m);font-size:10px;font-style:normal;width:0;
+  transition:width 1.1s var(--ease);white-space:nowrap;overflow:hidden}
+.bar .s{background:var(--grad);color:#04120E;font-weight:500}
+.bar .m{background:rgba(255,255,255,.07);color:var(--muted);justify-content:flex-end}
+.verdict-line{font-family:var(--m);font-size:10px;color:var(--mint);margin-top:9px;letter-spacing:.08em}
+.rail{position:absolute;right:-70px;bottom:24px;display:flex;flex-direction:column;gap:10px;z-index:4}
+@media(max-width:900px){.rail{right:12px;bottom:170px}}
+.rb{width:50px;height:50px;border-radius:50%;background:var(--glass);border:var(--glass-brd);box-shadow:var(--spec);
+  backdrop-filter:blur(18px) saturate(160%);display:grid;place-items:center;transition:.4s var(--ease);position:relative}
+.rb:hover{transform:scale(1.12) translateY(-2px);background:rgba(255,255,255,.2)}
+.rb svg{width:19px;height:19px;stroke:var(--paper);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.rb.saved{background:var(--grad);border-color:transparent}
+.rb.saved svg{stroke:#04120E;fill:#04120E}
+.rb::after{content:attr(data-t);position:absolute;right:60px;top:50%;transform:translateY(-50%) translateX(8px);opacity:0;
+  font-family:var(--m);font-size:9px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;
+  pointer-events:none;transition:.3s var(--ease);color:var(--muted)}
+.rb:hover::after{opacity:1;transform:translateY(-50%)}
+@media(max-width:900px){.rb::after{display:none}}
+.take-lbl{font-family:var(--m);font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--mint);margin-bottom:20px}
+.take{font-family:var(--s);font-size:clamp(21px,3.6vw,27px);line-height:1.26;letter-spacing:-.01em}
+.take-sig{display:flex;justify-content:space-between;align-items:flex-end;font-family:var(--m);font-size:9.5px;
+  color:var(--faint);letter-spacing:.14em;text-transform:uppercase;margin-top:22px}
+.back-x{align-self:flex-start;padding:11px 18px;border-radius:100px;border:1px solid var(--line);
+  font-family:var(--m);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;transition:.3s}
+.back-x:hover{background:var(--paper);color:var(--ink)}
+.dots{position:absolute;right:var(--gut);top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;gap:8px}
+@media(max-width:1180px){.dots{display:none}}
+.dots i{width:3px;height:14px;border-radius:3px;background:rgba(241,244,240,.22);transition:.45s var(--ease);cursor:pointer;display:block}
+.dots i.on{background:var(--grad);height:30px}
+.reel-hud{position:absolute;left:var(--gut);bottom:26px;z-index:5;font-family:var(--m);font-size:10px;
+  letter-spacing:.2em;color:var(--faint);text-transform:uppercase;display:flex;gap:14px;align-items:center}
+.reel-hud b{color:var(--paper);font-weight:800;font-size:14px}
+.scroll-cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:5;font-family:var(--m);
+  font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);display:flex;flex-direction:column;
+  align-items:center;gap:7px;transition:opacity .5s}
+.scroll-cue i{width:1px;height:26px;background:linear-gradient(var(--mint),transparent);animation:cue 1.7s infinite}
+@keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ── verdict room ───────────────────────────────────────────── */
+.room{padding-block:clamp(70px,10vh,110px);overflow:hidden;position:relative}
+.room-track{display:flex;gap:14px;width:max-content;animation:march 40s linear infinite}
+.room:hover .room-track{animation-play-state:paused}
+.vcard{display:flex;align-items:center;gap:16px;padding:16px 22px;border-radius:100px;background:var(--glass);
+  border:var(--glass-brd);box-shadow:var(--spec);backdrop-filter:blur(14px);white-space:nowrap}
+.vcard .pct{font-weight:900;font-size:26px;letter-spacing:-.03em;background:var(--grad);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.vcard .txt{font-family:var(--m);font-size:11px;color:var(--muted)}
+.vcard .txt b{color:var(--paper);font-family:var(--d);font-weight:600}
+
+/* ── beats / brief ──────────────────────────────────────────── */
+.beats{display:flex;flex-wrap:wrap;gap:10px;margin:34px 0}
+.beat{padding:13px 20px;border-radius:100px;border:1px solid var(--line);background:rgba(255,255,255,.03);
+  font-family:var(--m);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);transition:.35s var(--ease)}
+.beat:hover{border-color:rgba(95,227,192,.5);color:var(--paper);transform:translateY(-2px)}
+.beat.on{background:var(--grad);color:#04120E;border-color:transparent;font-weight:500}
+.brief{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(20px,4vw,54px);align-items:center}
+@media(max-width:940px){.brief{grid-template-columns:1fr}}
+.brief-card{border-radius:24px;padding:clamp(24px,3.4vw,40px);background:var(--glass);border:var(--glass-brd);
+  box-shadow:var(--lift),var(--spec);backdrop-filter:blur(24px) saturate(170%);position:relative;overflow:hidden}
+.brief-card::before{content:'';position:absolute;top:-50%;left:-20%;width:70%;height:200%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);transform:rotate(18deg);
+  animation:sheen 7s var(--ease-io) infinite}
+@keyframes sheen{0%,70%{left:-40%}100%{left:130%}}
+.brief-time{font-family:var(--m);font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--mint);
+  margin-bottom:20px;display:flex;justify-content:space-between}
+.brief-list{list-style:none;display:flex;flex-direction:column}
+.brief-list li{display:flex;gap:15px;padding:15px 0;border-top:1px solid var(--line);align-items:baseline;transition:.4s var(--ease)}
+.brief-list li span{font-family:var(--m);font-size:10px;color:var(--faint);flex:none;width:22px}
+.brief-list li p{font-size:15px;font-weight:500;letter-spacing:-.015em}
+.brief-list li:hover{padding-left:8px;color:var(--mint)}
+.brief-cta{margin-top:26px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.mail{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 20px;border-radius:100px;
+  border:1px solid var(--line);background:rgba(0,0,0,.25);transition:.35s}
+.mail:focus-within{border-color:var(--mint)}
+.mail input{background:none;border:none;outline:none;color:var(--paper);font-family:var(--m);font-size:11px;
+  width:min(46vw,200px);letter-spacing:.06em}
+.mail input::placeholder{color:var(--faint)}
+.mail button{padding:11px 18px;border-radius:100px;background:var(--grad);color:#04120E;font-family:var(--m);
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;transition:.3s var(--ease)}
+.mail button:hover{filter:brightness(1.1)}
+.mail-note{font-family:var(--m);font-size:10px;color:var(--mint);opacity:0;transition:.4s}
+.mail-note.on{opacity:1}
+.pull{font-family:var(--s);font-size:clamp(24px,3.4vw,40px);line-height:1.16;letter-spacing:-.02em;font-style:italic}
+
+/* ── extension demo ─────────────────────────────────────────── */
+.ext{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(26px,4vw,60px);align-items:center}
+@media(max-width:1040px){.ext{grid-template-columns:1fr}}
+.ext-feats{list-style:none;display:flex;flex-direction:column;margin-top:30px}
+.ext-feats li{padding:17px 0;border-top:1px solid var(--line);display:flex;gap:16px;align-items:flex-start;transition:.4s var(--ease)}
+.ext-feats li:hover{padding-left:10px}
+.ext-feats .k{font-family:var(--m);font-size:10px;color:var(--mint);flex:none;width:26px;padding-top:3px}
+.ext-feats h4{font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:5px}
+.ext-feats p{font-size:13.5px;color:var(--muted);max-width:40ch}
+.browser{border-radius:16px;overflow:hidden;border:var(--glass-brd);box-shadow:var(--lift);background:var(--ink-2);
+  position:relative;transform:perspective(1800px) rotateY(-7deg) rotateX(3deg);transition:transform .9s var(--ease)}
+.browser:hover{transform:perspective(1800px) rotateY(0) rotateX(0)}
+@media(max-width:1040px){.browser{transform:none}}
+.bbar{display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(255,255,255,.045);border-bottom:1px solid var(--line)}
+.dotset{display:flex;gap:6px}
+.dotset i{width:9px;height:9px;border-radius:50%;background:rgba(241,244,240,.2)}
+.url{flex:1;padding:7px 14px;border-radius:100px;background:rgba(0,0,0,.4);font-family:var(--m);font-size:10px;
+  color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.extbtn{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--grad);transition:.35s var(--ease)}
+.extbtn.buzz{animation:buzz .6s var(--ease)}
+@keyframes buzz{25%{transform:rotate(-12deg) scale(1.15)}75%{transform:rotate(12deg) scale(1.15)}}
+.extbtn i{width:11px;height:11px;background:var(--ink-2);clip-path:polygon(0 0,100% 0,100% 100%,50% 60%,0 100%)}
+.page{padding:26px;min-height:400px;position:relative;background:radial-gradient(600px 300px at 80% 0%,rgba(255,255,255,.04),transparent)}
+.fk-h{height:11px;border-radius:4px;background:rgba(241,244,240,.20);width:62%;margin-bottom:11px}
+.fk-l{height:7px;border-radius:4px;background:rgba(241,244,240,.09);margin-bottom:9px}
+.fk-l.s{width:78%}.fk-l.m{width:92%}
+.adslot{position:relative;border-radius:12px;margin:20px 0;display:grid;place-items:center;overflow:hidden;
+  font-family:var(--m);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.85);
+  transition:.5s var(--ease);border:1px dashed transparent}
+#ad1{height:130px;background:linear-gradient(115deg,#1d3a34,#0f1f1c)}
+#ad2{height:96px;background:linear-gradient(115deg,#2a2f18,#151a10)}
+.adslot .lbl{position:relative;z-index:2;opacity:.5;transition:.4s}
+.radar-on .adslot{border-color:var(--mint);box-shadow:0 0 0 1px rgba(95,227,192,.25),inset 0 0 34px rgba(95,227,192,.22)}
+.radar-on .adslot .lbl{opacity:1;color:var(--mint)}
+.tagit{position:absolute;top:9px;left:9px;z-index:3;font-family:var(--m);font-size:8.5px;letter-spacing:.16em;
+  text-transform:uppercase;padding:5px 9px;border-radius:100px;background:var(--grad);color:#04120E;opacity:0;
+  transform:translateY(-6px);transition:.4s var(--ease);pointer-events:none}
+.radar-on .tagit{opacity:1;transform:none}
+.clipit{position:absolute;bottom:9px;right:9px;z-index:3;font-family:var(--m);font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;padding:8px 13px;border-radius:100px;background:rgba(7,9,10,.72);border:1px solid var(--mint);
+  color:var(--mint);backdrop-filter:blur(10px);opacity:0;transform:translateY(6px);transition:.4s var(--ease);pointer-events:none}
+.radar-on .clipit{opacity:1;transform:none;pointer-events:auto}
+.clipit:hover{background:var(--mint);color:#04120E}
+#ad1 .clipit{left:9px;right:auto}
+.scanline{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--mint),transparent);
+  box-shadow:0 0 22px 3px rgba(95,227,192,.5);opacity:0;z-index:5;pointer-events:none;top:0}
+.scanline.go{animation:scan 1.25s var(--ease-io)}
+@keyframes scan{0%{opacity:1;top:0}100%{opacity:0;top:100%}}
+.pop{position:absolute;top:52px;right:12px;width:250px;border-radius:16px;padding:16px;z-index:8;
+  background:rgba(13,17,18,.82);backdrop-filter:blur(26px) saturate(170%);border:var(--glass-brd);
+  box-shadow:var(--lift),var(--spec);opacity:0;transform:translateY(-10px) scale(.95);transform-origin:top right;
+  transition:.45s var(--ease);pointer-events:none}
+.pop.on{opacity:1;transform:none;pointer-events:auto}
+.pop-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}
+.pop-h b{font-family:var(--m);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--mint);font-weight:400}
+.tog{width:34px;height:19px;border-radius:100px;background:rgba(255,255,255,.14);position:relative;transition:.35s var(--ease)}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:var(--paper);transition:.35s var(--ease)}
+.tog.on{background:var(--grad)}.tog.on::after{left:17px;background:#04120E}
+.pop-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;min-height:72px}
+.thumb{height:52px;border-radius:9px;position:relative;overflow:hidden;animation:popIn .5s var(--ease)}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}}
+.thumb::after{content:attr(data-t);position:absolute;bottom:4px;left:5px;font-family:var(--m);font-size:7px;
+  letter-spacing:.1em;color:rgba(255,255,255,.9);text-transform:uppercase}
+.pop-empty{grid-column:1/-1;display:grid;place-items:center;font-family:var(--m);font-size:9px;color:var(--faint);
+  letter-spacing:.14em;text-transform:uppercase;text-align:center;line-height:2}
+.pop-f{margin-top:13px;padding-top:11px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+  font-family:var(--m);font-size:9px;color:var(--faint);letter-spacing:.1em}
+.pop-f em{color:var(--mint);font-style:normal}
+.ext-ctrls{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.fly{position:fixed;z-index:8500;border-radius:8px;pointer-events:none;transition:all .85s var(--ease);opacity:1}
+
+/* ── swipe drawer ───────────────────────────────────────────── */
+.drawer{position:fixed;inset:auto 0 0 0;z-index:800;transform:translateY(101%);transition:transform .75s var(--ease);
+  background:rgba(10,13,14,.86);backdrop-filter:blur(34px) saturate(180%);border-top:1px solid var(--line);
+  box-shadow:0 -30px 90px rgba(0,0,0,.7);max-height:76svh;overflow:auto;padding:26px var(--gut) 40px}
+.drawer.on{transform:none}
+.drawer-h{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:16px}
+.drawer-h h3{font-weight:900;font-size:clamp(24px,3.4vw,40px);text-transform:uppercase;letter-spacing:-.035em}
+.drawer-h p{font-family:var(--m);font-size:10px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:8px}
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.sw{border-radius:16px;overflow:hidden;position:relative;height:150px;border:var(--glass-brd);animation:popIn .5s var(--ease);transition:.4s var(--ease)}
+.sw:hover{transform:translateY(-4px) scale(1.02)}
+.sw .sw-t{position:absolute;inset:auto 0 0 0;padding:13px;background:linear-gradient(transparent,rgba(7,9,10,.94));
+  font-size:12.5px;font-weight:600;letter-spacing:-.01em;line-height:1.25}
+.sw .sw-c{position:absolute;top:9px;left:9px;font-family:var(--m);font-size:8px;letter-spacing:.16em;
+  text-transform:uppercase;padding:4px 8px;border-radius:100px;background:rgba(7,9,10,.6);backdrop-filter:blur(8px);color:var(--mint)}
+.sw-empty{grid-column:1/-1;padding:44px 0;text-align:center;font-family:var(--m);font-size:11px;color:var(--faint);
+  letter-spacing:.16em;text-transform:uppercase;line-height:2.2}
+
+/* ── footer ─────────────────────────────────────────────────── */
+footer{position:relative;padding:clamp(70px,10vh,120px) var(--gut) 40px;border-top:1px solid var(--line);overflow:hidden}
+.foot-mark{font-weight:900;font-size:clamp(58px,17vw,260px);line-height:.78;letter-spacing:-.055em;text-transform:uppercase;
+  font-variation-settings:'wdth' 118;background:linear-gradient(180deg,rgba(241,244,240,.92),rgba(241,244,240,.06));
+  -webkit-background-clip:text;background-clip:text;color:transparent;user-select:none;pointer-events:none}
+.foot-row{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-top:34px;
+  font-family:var(--m);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.foot-row a:hover{color:var(--mint)}
+.foot-links{display:flex;gap:22px;flex-wrap:wrap}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="lens" id="lens"></div>
+<div class="lens-label" id="lensLabel"></div>
+<div id="prog"></div>
+
+<div id="boot">
+  <div class="boot-mark"><span>M</span><span>O</span><span>M</span></div>
+  <div class="boot-line"><i></i></div>
+  <div class="boot-cap">Loading the loud stuff</div>
+</div>
+
+<nav class="nav" id="nav">
+  <a href="#top" class="brand" data-cursor="dot">
+    <span class="glyphs"><i class="g"></i><i class="g o"></i><i class="g"></i></span>
+    MAD OVER MARKETING
+  </a>
+  <div class="nav-mid">
+    <a href="#reel">The Reel</a>
+    <a href="#room">Verdict Room</a>
+    <a href="#brief">Your 9AM</a>
+    <a href="#sidecar">Sidecar</a>
+  </div>
+  <button class="swipe-btn" id="swipeBtn" data-cursor="dot">Swipe File <b id="swipeCt">0</b></button>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-grid"></div>
+  <div class="aurora" id="a1"></div>
+  <div class="aurora" id="a2"></div>
+  <div class="aurora" id="a3"></div>
+  <div class="hero-inner">
+    <div class="eyebrow"><span class="pulse"></span> Live from adland &nbsp;·&nbsp; <span id="clock">00:00:00 IST</span></div>
+    <h1 class="mega">
+      <span class="ln"><i>Marketing</i></span>
+      <span class="ln"><i>news, with</i></span>
+      <span class="ln"><i><span class="swap" id="swap"><span class="in">a spine</span></span><em class="fs">.</em></i></span>
+    </h1>
+    <div class="hero-foot">
+      <p class="hero-copy">Everyone reports the campaign. Nobody says whether it was any good. <b>M/O/M does.</b> Scroll the reel, call the verdict, steal the good stuff. The industry argues in public — you're in the room.</p>
+      <div class="cta-row">
+        <button class="btn solid" data-go="#reel" data-cursor="big" data-label="Play"><span>Start the reel</span></button>
+        <button class="btn ghost" data-go="#sidecar" data-cursor="big" data-label="Get it">Get the Sidecar</button>
+      </div>
+    </div>
+  </div>
+  <div class="ticker">
+    <div class="ticker-tag"><span class="pulse"></span> Right now</div>
+    <div class="ticker-track" id="tick"></div>
+  </div>
+</header>
+
+<section id="reel">
+  <div class="reel-bg" id="reelBg"></div>
+  <div class="gutter">
+    <span class="cat" id="gCat">—</span>
+    <span class="idx" id="gIdx">01</span>
+    <span class="meta" id="gMeta"></span>
+  </div>
+  <div class="dots" id="dots"></div>
+  <div class="reel-scroll" id="reelScroll"></div>
+  <div class="reel-hud"><b id="hudN">01</b> / <span id="hudT">10</span> &nbsp;·&nbsp; The Reel</div>
+  <div class="scroll-cue" id="cue">Scroll <i></i></div>
+</section>
+
+<section class="sec room" id="room">
+  <div class="sec-head rv">
+    <div>
+      <span class="sec-no">02 — The Verdict Room</span>
+      <h2>What the room <em>actually</em> thinks</h2>
+    </div>
+    <p class="sec-note">Every card you judge moves these numbers. Come back tomorrow to find out if the room agreed with you — or if you were the weirdo.</p>
+  </div>
+  <div class="room-track" id="roomTrack"></div>
+</section>
+
+<section class="sec" id="brief">
+  <div class="sec-head rv">
+    <div>
+      <span class="sec-no">03 — The Ritual</span>
+      <h2>Build your <em>9AM</em></h2>
+    </div>
+    <p class="sec-note">Pick your beats. The reel re-orders itself, and tomorrow's brief lands with only the stuff you'd actually argue about.</p>
+  </div>
+  <div class="beats rv" id="beats"></div>
+  <div class="brief rv">
+    <div class="brief-card">
+      <div class="brief-time"><span>Tomorrow · 09:00 IST</span><span id="briefTag">All beats</span></div>
+      <ul class="brief-list" id="briefList"></ul>
+      <div class="brief-cta">
+        <div class="mail">
+          <input type="email" id="mailIn" placeholder="you@agency.com" aria-label="Email">
+          <button id="mailGo">Lock it in</button>
+        </div>
+        <span class="mail-note" id="mailNote"></span>
+      </div>
+    </div>
+    <div>
+      <h3 class="pull">A newsletter nobody opens is just a diary with extra steps.</h3>
+      <p style="color:var(--muted);margin-top:18px;font-size:15px;max-width:40ch">
+        So this one arrives already knowing which three stories you'd have argued about at lunch — and asks you to vote before your first coffee. That's the hook. Ritual beats reach.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="sidecar">
+  <div class="sec-head rv">
+    <div>
+      <span class="sec-no">04 — The Extension</span>
+      <h2>M/O/M <em>Sidecar</em></h2>
+    </div>
+    <p class="sec-note">The site is a destination. The extension is a habit. It rides along while you browse and turns the whole internet into your swipe file.</p>
+  </div>
+  <div class="ext">
+    <div class="rv">
+      <p style="color:var(--muted);font-size:15.5px;max-width:44ch">Marketers already screenshot ads into a WhatsApp group called "ideas". Sidecar just does it properly — and gives the ad an opinion on the way in.</p>
+      <ul class="ext-feats">
+        <li><span class="k">01</span><div><h4>Ad Radar</h4><p>Flip it on and every ad slot on any page outlines itself in mint, tagged by format and size. See the internet the way a media planner does.</p></div></li>
+        <li><span class="k">02</span><div><h4>One-click clip</h4><p>Clip any creative — or right-click any image — straight into your swipe file with the page, brand and format auto-tagged.</p></div></li>
+        <li><span class="k">03</span><div><h4>New tab takeover</h4><p>Every new tab is one M/O/M card and one question: sharp or meh. Twenty new tabs a day, twenty touchpoints. That's the returning-visitor engine.</p></div></li>
+        <li><span class="k">04</span><div><h4>Export the file</h4><p>Ship your swipe file to JSON or a moodboard when the brief lands. Your research was done three weeks ago, you just didn't know it.</p></div></li>
+      </ul>
+      <div class="ext-ctrls">
+        <button class="btn solid" id="radarBtn" data-cursor="big" data-label="Try"><span>Turn on Ad Radar</span></button>
+        <button class="btn ghost" id="popBtn" data-cursor="big" data-label="Open">Open Sidecar</button>
+      </div>
+    </div>
+    <div class="browser rv" id="browser">
+      <div class="bbar">
+        <div class="dotset"><i></i><i></i><i></i></div>
+        <div class="url">https://some-publisher.com/the-article-you-were-reading</div>
+        <button class="extbtn" id="extbtn" data-cursor="dot"><i></i></button>
+      </div>
+      <div class="page" id="page">
+        <div class="scanline" id="scan"></div>
+        <div class="fk-h"></div>
+        <div class="fk-l m"></div><div class="fk-l s"></div><div class="fk-l m"></div>
+        <div class="adslot" id="ad1">
+          <span class="lbl">Leaderboard · 728×90</span>
+          <span class="tagit">Display · Programmatic</span>
+          <button class="clipit" data-clip="Leaderboard unit" data-tag="Display">Clip</button>
+        </div>
+        <div class="fk-l m"></div><div class="fk-l s"></div><div class="fk-l m"></div><div class="fk-l s"></div>
+        <div class="adslot" id="ad2">
+          <span class="lbl">Native in-feed · sponsored</span>
+          <span class="tagit">Native · Branded</span>
+          <button class="clipit" data-clip="Native in-feed unit" data-tag="Native">Clip</button>
+        </div>
+        <div class="fk-l m"></div><div class="fk-l s"></div>
+        <div class="pop" id="pop">
+          <div class="pop-h"><b>Sidecar</b><div class="tog" id="tog"></div></div>
+          <div class="pop-grid" id="popGrid"><div class="pop-empty">Nothing clipped yet<br>Turn radar on</div></div>
+          <div class="pop-f"><span>Swipe file</span><em id="popCt">0 items</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-mark">MAD<br>OVER<br>MARKETING</div>
+  <div class="foot-row">
+    <span>Prototype · concept build · unofficial</span>
+    <div class="foot-links">
+      <a href="#reel">Reel</a><a href="#brief">9AM</a><a href="#sidecar">Sidecar</a>
+      <a href="https://mad-over-marketing.com/" target="_blank" rel="noopener">Original site ↗</a>
+    </div>
+    <span>Made loud in Delhi</span>
+  </div>
+</footer>
+
+<div class="drawer" id="drawer">
+  <div class="drawer-h">
+    <div><h3>Your swipe file</h3><p id="drawerSub">Nothing saved yet — hit the bookmark on a card</p></div>
+    <button class="btn ghost" id="drawerX" data-cursor="dot">Close</button>
+  </div>
+  <div class="sw-grid" id="swGrid"><div class="sw-empty">Empty.<br>Save a story or clip an ad in the Sidecar demo.</div></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   M/O/M prototype — session state only (no browser storage APIs)
+   ═══════════════════════════════════════════════════════════════ */
+const $ = (s,c=document)=>c.querySelector(s);
+const $$ = (s,c=document)=>[...c.querySelectorAll(s)];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Placeholder editorial. Swap STORIES for a CMS feed and nothing else changes. */
+const STORIES = [
+  {cat:'MEDIA',   beat:'media',   art:0, acc:'#5FE3C0', t:"The 15-second ad that only runs at 2AM",
+   d:"A sleep-tech brand bought insomnia. Same film, one daypart, zero prime time — and the cheapest CPMs on the internet.",
+   take:"Dayparting is the last honest targeting left. They didn't buy an audience, they bought a mood. Every planner reading this is now looking at 2AM inventory. Sorry, media owners."},
+  {cat:'CAMPAIGN',beat:'work',    art:1, acc:'#6DEE86', t:"A biscuit brand turned dunking into a sport",
+   d:"Officiated rules, a national ranking table, and a slow-motion replay of soggy collapse. Category: snacking. Actual category: sport.",
+   take:"The idea isn't the tournament. The idea is that they invented a losing condition. Give people a way to fail publicly and they'll play forever. That's a game designer's brain in a biscuit brief."},
+  {cat:'CULTURE', beat:'culture', art:2, acc:'#C9FF6B', t:"Every young brand now sounds like your therapist",
+   d:"Softness as a strategy: lowercase, gentle, boundaried. Twelve DTC brands, one voice, zero distance between them.",
+   take:"When empathy becomes a template it stops being empathy and starts being a font choice. The next winner in this category will be rude. Not cruel — rude. Distinctiveness is the only real kindness."},
+  {cat:'INDIA',   beat:'india',   art:3, acc:'#5FE3C0', t:"Regional isn't a discount. It's the whole market.",
+   d:"A fintech shipped nine languages before it shipped a dark mode. Growth curve looks like a hockey stick that learned Bhojpuri.",
+   take:"Translation is not localisation. One is a cost line, the other is a creative brief. The brands winning here didn't translate the copy — they rewrote the joke."},
+  {cat:'TECH',    beat:'tech',    art:4, acc:'#6DEE86', t:"AI wrote the brief. The intern fixed it.",
+   d:"Nine out of ten agencies now start with a machine draft. The billable hours moved from writing to arguing with the writing.",
+   take:"The machine gets you to average in four seconds. Average used to take three days, so that's a real gift. But nobody has ever bought anything because it was average. The premium moved."},
+  {cat:'DESIGN',  beat:'design',  art:0, acc:'#C9FF6B', t:"The logo shrank. The revenue didn't.",
+   d:"Another heritage mark flattened into a sans-serif whisper. The internet screamed. The quarterlies did not.",
+   take:"Rebrands aren't judged on the logo, they're judged on the sentence the logo lets you write next. If the flattening bought them a new tone of voice, fine. If it bought them nothing, that's expensive tidying."},
+  {cat:'OOH',     beat:'work',    art:1, acc:'#5FE3C0', t:"Out-of-home is having an out-of-body moment",
+   d:"Anamorphic screens, fake-3D everything. Half the executions were never meant for the street — they were meant for your feed.",
+   take:"The billboard is now a film set. That's not cheating, it's honest media planning. But if it only works through a phone camera, call it social. The pavement deserves better."},
+  {cat:'BRANDS',  beat:'brand',   art:2, acc:'#6DEE86', t:"Your loyalty programme is a haunted house",
+   d:"Points nobody redeems, tiers nobody understands, an app opened once a year by accident. Audited: it's a liability with a UI.",
+   take:"Loyalty is a feeling you rent with points and own with behaviour. If the only reason someone stays is unredeemed currency, you don't have loyalty. You have hostages with a wallet."},
+  {cat:'MEDIA',   beat:'media',   art:3, acc:'#C9FF6B', t:"The ad break is dead. Long live the ad break.",
+   d:"Streaming's ad tiers now outgrow the premium ones. Turns out people will watch commercials for a discount, like it's 1998.",
+   take:"We spent a decade insisting people hate advertising. People hate bad advertising and love saving money. Those are very different findings and we billed a lot of hours confusing them."},
+  {cat:'CULTURE', beat:'culture', art:4, acc:'#5FE3C0', t:"Nostalgia is now a raw material with a price",
+   d:"Three revivals this month. The 90s are officially a supply chain — licensable, forecastable, mildly exhausted.",
+   take:"Nostalgia works because it borrows trust you never earned. That's a loan. Pay it back with something new, or the audience notices you're just wearing your dad's jacket."}
+];
+
+const BEATS = [
+  {id:'work',   label:'The Work'},
+  {id:'media',  label:'Media & Money'},
+  {id:'culture',label:'Culture'},
+  {id:'india',  label:'India Desk'},
+  {id:'tech',   label:'AI & Tech'},
+  {id:'design', label:'Design'},
+  {id:'brand',  label:'Brand Building'}
+];
+
+const TICK = [
+  ['Now','A telco just made its hold music a chart entry'],
+  ['3m','"Agency of record" is officially a haunted phrase'],
+  ['11m','Someone rebranded a bank into a verb'],
+  ['24m','The room is 71% sharp on today\u2019s top card'],
+  ['38m','Vertical video finally admits it is just television'],
+  ['52m','A CMO said "brand" and "performance" in one sentence. No injuries'],
+  ['1h','Retail media is eating the trade budget alive'],
+  ['1h','Nobody has opened your loyalty app since March']
+];
+
+/* ── procedural poster art: every story gets an original ─────── */
+function art(recipe, acc, seed){
+  const R = (n=1)=>{seed=(seed*9301+49297)%233280; return (seed/233280)*n;};
+  const W=400, H=700, k=recipe+''+seed;
+  let s=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g${k}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${acc}" stop-opacity=".95"/><stop offset="1" stop-color="#07090A"/></linearGradient>
+    <radialGradient id="r${k}"><stop offset="0" stop-color="${acc}" stop-opacity=".9"/>
+      <stop offset="1" stop-color="${acc}" stop-opacity="0"/></radialGradient>
+    <filter id="b${k}"><feGaussianBlur stdDeviation="26"/></filter>
+  </defs>
+  <rect width="${W}" height="${H}" fill="#0A0D0E"/>`;
+
+  if(recipe===0){
+    s+=`<circle cx="200" cy="300" r="240" fill="url(#r${k})" opacity=".55"/>`;
+    for(let i=0;i<16;i++) s+=`<circle cx="200" cy="300" r="${32+i*23}" fill="none" stroke="${acc}"
+      stroke-opacity="${(0.62-i*0.032).toFixed(3)}" stroke-width="${(1.6-i*.06).toFixed(2)}"
+      stroke-dasharray="${(R(200)+40).toFixed(0)} ${(R(90)+14).toFixed(0)}" transform="rotate(${R(360).toFixed(0)} 200 300)"/>`;
+  }
+  if(recipe===1){
+    s+=`<rect width="${W}" height="${H}" fill="url(#g${k})" opacity=".55"/>`;
+    for(let y=0;y<24;y++)for(let x=0;x<14;x++){
+      const d=Math.hypot(x-7,y-9), r=Math.max(0,7.4-d*.62)*(0.55+R(.7));
+      if(r>0.4) s+=`<circle cx="${14+x*28}" cy="${16+y*29}" r="${r.toFixed(2)}" fill="${acc}" opacity="${(0.28+R(.55)).toFixed(2)}"/>`;
+    }
+  }
+  if(recipe===2){
+    for(let i=0;i<5;i++) s+=`<ellipse cx="${R(400).toFixed(0)}" cy="${R(700).toFixed(0)}"
+      rx="${(70+R(140)).toFixed(0)}" ry="${(70+R(150)).toFixed(0)}" fill="${acc}"
+      opacity="${(0.16+R(.30)).toFixed(2)}" filter="url(#b${k})"/>`;
+    for(let i=0;i<26;i++) s+=`<line x1="0" y1="${i*28}" x2="400" y2="${(i*28+R(40)-20).toFixed(0)}"
+      stroke="${acc}" stroke-opacity=".12" stroke-width=".8"/>`;
+  }
+  if(recipe===3){
+    s+=`<rect width="${W}" height="${H}" fill="url(#g${k})" opacity=".42"/>`;
+    for(let i=-8;i<26;i++) s+=`<rect x="${i*34}" y="-100" width="${(4+R(15)).toFixed(1)}" height="900"
+      fill="${acc}" opacity="${(0.10+R(.34)).toFixed(2)}" transform="rotate(22 200 350)"/>`;
+    s+=`<circle cx="300" cy="180" r="150" fill="url(#r${k})" opacity=".5"/>`;
+  }
+  if(recipe===4){
+    s+=`<circle cx="180" cy="420" r="260" fill="url(#r${k})" opacity=".45"/>`;
+    for(let i=0;i<7;i++){const rx=50+i*40, ry=20+i*24;
+      s+=`<ellipse cx="200" cy="350" rx="${rx}" ry="${ry}" fill="none" stroke="${acc}"
+        stroke-opacity="${(0.5-i*0.05).toFixed(2)}" stroke-width="1.1" transform="rotate(${-30+i*13} 200 350)"/>`;
+      s+=`<circle cx="${(200+rx*Math.cos(i*1.3)).toFixed(0)}" cy="${(350+ry*Math.sin(i*1.3)).toFixed(0)}" r="${(2+R(4)).toFixed(1)}" fill="${acc}"/>`;
+    }
+  }
+  s+=`<rect width="${W}" height="${H}" fill="url(#g${k})" opacity=".18" style="mix-blend-mode:overlay"/></svg>`;
+  return s;
+}
+
+/* ── boot ───────────────────────────────────────────────────── */
+addEventListener('load',()=>setTimeout(()=>{
+  const b=$('#boot'); if(!b) return;
+  b.classList.add('out'); setTimeout(()=>b.remove(),1400);
+}, reduce?100:1250));
+
+setInterval(()=>{
+  const c=$('#clock');
+  if(c) c.textContent=new Date().toLocaleTimeString('en-GB',{timeZone:'Asia/Kolkata',hour12:false})+' IST';
+},1000);
+
+/* ── swapping word ──────────────────────────────────────────── */
+const WORDS=['a spine','teeth','taste','a pulse','opinions','a mouth'];
+let wi=0;
+setInterval(()=>{
+  const w=$('#swap'); if(!w||reduce) return;
+  const old=w.querySelector('span'); wi=(wi+1)%WORDS.length;
+  const nu=document.createElement('span'); nu.className='in'; nu.textContent=WORDS[wi];
+  old.classList.add('out'); w.appendChild(nu);
+  setTimeout(()=>old.remove(),700);
+},2600);
+
+$('#tick').innerHTML=[...TICK,...TICK].map(([t,x])=>`<span class="ticker-item"><em>${t}</em> ${x}</span>`).join('');
+
+/* ── cursor lens ────────────────────────────────────────────── */
+const lens=$('#lens'), lensL=$('#lensLabel');
+let mx=innerWidth/2,my=innerHeight/2,lx=mx,ly=my;
+addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY});
+(function loop(){
+  lx+=(mx-lx)*.18; ly+=(my-ly)*.18;
+  lens.style.transform=`translate(${lx}px,${ly}px) translate(-50%,-50%)`;
+  lensL.style.transform=`translate(${lx}px,${ly}px) translate(-50%,-50%)`;
+  requestAnimationFrame(loop);
+})();
+document.addEventListener('pointerover',e=>{
+  const t=e.target.closest('[data-cursor]');
+  lens.className='lens'+(t?' '+t.dataset.cursor:'');
+  const lb=t&&t.dataset.label;
+  lensL.textContent=lb||''; lensL.classList.toggle('on',!!lb);
+});
+
+/* ── aurora parallax ────────────────────────────────────────── */
+const auras=[[$('#a1'),.026],[$('#a2'),-.034],[$('#a3'),.05]];
+addEventListener('pointermove',e=>{
+  if(reduce) return;
+  const cx=e.clientX-innerWidth/2, cy=e.clientY-innerHeight/2;
+  auras.forEach(([el,k])=>{ if(el) el.style.transform=`translate(${cx*k}px,${cy*k}px)`; });
+});
+
+/* ── nav + progress ─────────────────────────────────────────── */
+let lastY=0;
+addEventListener('scroll',()=>{
+  const y=scrollY, h=document.body.scrollHeight-innerHeight;
+  $('#prog').style.width=(y/Math.max(h,1)*100)+'%';
+  const nav=$('#nav');
+  nav.classList.toggle('stuck',y>60);
+  nav.classList.toggle('hide',y>lastY&&y>460&&!drawerOpen);
+  lastY=y;
+},{passive:true});
+$$('[data-go]').forEach(b=>b.onclick=()=>$(b.dataset.go).scrollIntoView({behavior:'smooth'}));
+
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}
+}),{threshold:.15});
+$$('.rv').forEach((el,i)=>{el.style.transitionDelay=(i%3*90)+'ms';io.observe(el)});
+
+/* ═══ SWIPE FILE ════════════════════════════════════════════ */
+const swipe=[]; let drawerOpen=false;
+function addSwipe(item, fromEl){
+  if(swipe.some(s=>s.t===item.t)) return false;
+  swipe.push(item); renderSwipe(); bump();
+  if(fromEl&&!reduce) fly(fromEl);
+  return true;
+}
+function bump(){
+  const b=$('#swipeCt'); b.textContent=swipe.length;
+  b.classList.add('pop'); setTimeout(()=>b.classList.remove('pop'),400);
+}
+function fly(el){
+  const r=el.getBoundingClientRect(), tgt=$('#swipeBtn').getBoundingClientRect();
+  const f=document.createElement('div'); f.className='fly';
+  f.style.cssText=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;background:var(--grad)`;
+  document.body.appendChild(f);
+  requestAnimationFrame(()=>{
+    f.style.left=(tgt.left+tgt.width/2)+'px'; f.style.top=(tgt.top+tgt.height/2)+'px';
+    f.style.width='8px'; f.style.height='8px'; f.style.opacity='0';
+  });
+  setTimeout(()=>f.remove(),900);
+}
+function renderSwipe(){
+  const g=$('#swGrid'), pg=$('#popGrid');
+  $('#popCt').textContent=swipe.length+' item'+(swipe.length===1?'':'s');
+  $('#drawerSub').textContent = swipe.length
+    ? swipe.length+' saved this session · export to JSON, moodboard or brief'
+    : 'Nothing saved yet — hit the bookmark on a card';
+  g.innerHTML = swipe.length ? swipe.map(s=>
+    `<div class="sw" style="background:linear-gradient(150deg,${s.acc}55,#0A0D0E)">
+       <span class="sw-c">${s.cat}</span><div class="sw-t">${s.t}</div></div>`).join('')
+    : `<div class="sw-empty">Empty.<br>Save a story or clip an ad in the Sidecar demo.</div>`;
+  pg.innerHTML = swipe.length ? swipe.slice(-4).map(s=>
+    `<div class="thumb" data-t="${s.cat}" style="background:linear-gradient(140deg,${s.acc},#0A0D0E)"></div>`).join('')
+    : `<div class="pop-empty">Nothing clipped yet<br>Turn radar on</div>`;
+}
+$('#swipeBtn').onclick=()=>toggleDrawer(true);
+$('#drawerX').onclick=()=>toggleDrawer(false);
+function toggleDrawer(on){drawerOpen=on;$('#drawer').classList.toggle('on',on)}
+addEventListener('keydown',e=>{if(e.key==='Escape')toggleDrawer(false)});
+
+/* ═══ THE REEL ══════════════════════════════════════════════ */
+let order=[...STORIES.keys()];
+const votes={};
+const seeded=STORIES.map((_,i)=>52+((i*29)%37));
+let slideObs;
+
+function buildReel(){
+  const wrap=$('#reelScroll'); wrap.innerHTML='';
+  order.forEach((si,pos)=>{
+    const s=STORIES[si];
+    const el=document.createElement('div');
+    el.className='slide'; el.dataset.i=si; el.dataset.pos=pos;
+    el.innerHTML=`
+      <div class="card" data-cursor="big" data-label="Flip">
+        <div class="card-in">
+          <div class="face front">
+            <div class="art">${art(s.art,s.acc,si*77+13)}</div>
+            <div class="scrim"></div>
+            <div class="card-top">
+              <span class="stamp">M/O/M · ${String(pos+1).padStart(2,'0')}</span>
+              <span class="stamp">${pos*7+3}m ago</span>
+            </div>
+            <div class="card-body">
+              <span class="chip" style="color:${s.acc}">${s.cat}</span>
+              <h3>${s.t}</h3>
+              <p class="dek">${s.d}</p>
+              <div class="vote" data-i="${si}">
+                <div class="vote-btns">
+                  <button class="vb sharp" data-v="sharp">Sharp</button>
+                  <button class="vb meh" data-v="meh">Meh</button>
+                </div>
+                <div class="vote-res">
+                  <div class="bar"><i class="s">Sharp <b style="margin-left:6px"></b></i><i class="m">Meh</i></div>
+                  <div class="verdict-line"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="face back">
+            <div>
+              <div class="take-lbl">M/O/M's take</div>
+              <p class="take">${s.take}</p>
+            </div>
+            <div>
+              <button class="back-x">← Back to the card</button>
+              <div class="take-sig"><span>The desk</span><span>${s.cat}</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="rail">
+          <button class="rb flipBtn" data-t="The take" aria-label="Flip"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></button>
+          <button class="rb saveBtn" data-t="Swipe file" aria-label="Save"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+          <button class="rb shareBtn" data-t="Send to the group" aria-label="Share"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+        </div>
+      </div>`;
+    wrap.appendChild(el);
+  });
+  $('#dots').innerHTML=order.map((_,i)=>`<i data-d="${i}"></i>`).join('');
+  $('#hudT').textContent=String(order.length).padStart(2,'0');
+  $$('#dots i').forEach(d=>d.onclick=()=>$$('.slide')[+d.dataset.d].scrollIntoView({behavior:'smooth'}));
+  Object.keys(votes).forEach(i=>{
+    const v=$(`.vote[data-i="${i}"]`); if(v) paintVote(v,+i,votes[i],false);
+  });
+  observeSlides();
+}
+
+function paintVote(box,i,choice,animate=true){
+  let pct=seeded[i]+(choice==='sharp'?2:-2);
+  pct=Math.max(6,Math.min(94,pct));
+  box.classList.add('done');
+  const s=box.querySelector('.bar .s'), m=box.querySelector('.bar .m');
+  const go=()=>{s.style.width=pct+'%'; m.style.width=(100-pct)+'%'; s.querySelector('b').textContent=pct+'%';};
+  animate?setTimeout(go,60):go();
+  const mine = choice==='sharp'?pct:100-pct;
+  box.querySelector('.verdict-line').textContent = mine>=50
+    ? `You're with the ${mine}%. Boringly correct.`
+    : `You're in the ${mine}%. Brave. We respect it.`;
+  buildRoom();
+}
+
+$('#reelScroll').addEventListener('click',e=>{
+  const card=e.target.closest('.card'); if(!card) return;
+  const i=+card.closest('.slide').dataset.i, s=STORIES[i];
+
+  if(e.target.closest('.saveBtn')){
+    const b=e.target.closest('.saveBtn');
+    if(addSwipe({t:s.t,cat:s.cat,acc:s.acc},b)) b.classList.add('saved');
+    return;
+  }
+  if(e.target.closest('.shareBtn')){
+    const b=e.target.closest('.shareBtn');
+    if(navigator.clipboard) navigator.clipboard.writeText(`${s.t} — M/O/M's take: ${s.take}`).catch(()=>{});
+    b.setAttribute('data-t','Copied ✓');
+    setTimeout(()=>b.setAttribute('data-t','Send to the group'),1600);
+    return;
+  }
+  if(e.target.closest('.vb')){
+    const btn=e.target.closest('.vb'), box=btn.closest('.vote');
+    votes[i]=btn.dataset.v; paintVote(box,i,btn.dataset.v);
+    return;
+  }
+  if(e.target.closest('.vote')) return;
+  card.classList.toggle('flip');
+});
+
+function observeSlides(){
+  if(slideObs) slideObs.disconnect();
+  slideObs=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.intersectionRatio>.55){
+      const pos=+e.target.dataset.pos, s=STORIES[+e.target.dataset.i];
+      $('#gCat').textContent=s.cat;
+      $('#gIdx').textContent=String(pos+1).padStart(2,'0');
+      $('#gMeta').innerHTML=`The desk · ${s.beat.toUpperCase()}<br>Tap the card for the take`;
+      $('#hudN').textContent=String(pos+1).padStart(2,'0');
+      $$('#dots i').forEach((d,k)=>d.classList.toggle('on',k===pos));
+      $('#reelBg').style.background=`radial-gradient(60% 60% at 50% 45%, ${s.acc}, transparent 70%)`;
+      $('#cue').style.opacity = pos===order.length-1 ? 0 : .9;
+    }
+  }),{root:$('#reelScroll'),threshold:[.56]});
+  $$('.slide').forEach(s=>slideObs.observe(s));
+}
+
+addEventListener('keydown',e=>{
+  const r=$('#reel').getBoundingClientRect();
+  if(r.top>100||r.bottom<300) return;
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    const sc=$('#reelScroll');
+    sc.scrollBy({top:e.key==='ArrowDown'?sc.clientHeight:-sc.clientHeight,behavior:'smooth'});
+  }
+});
+buildReel();
+
+/* ═══ VERDICT ROOM ══════════════════════════════════════════ */
+function buildRoom(){
+  const items=STORIES.map((s,i)=>{
+    const p=seeded[i]+(votes[i]?(votes[i]==='sharp'?2:-2):0);
+    return `<div class="vcard" data-cursor="dot"><span class="pct">${p}%</span>
+      <span class="txt">said <b>sharp</b> · ${s.t.slice(0,40)}${s.t.length>40?'…':''}</span></div>`;
+  });
+  $('#roomTrack').innerHTML=[...items,...items].join('');
+}
+buildRoom();
+
+/* ═══ BEATS + BRIEF ═════════════════════════════════════════ */
+const picked=new Set();
+$('#beats').innerHTML=BEATS.map(b=>`<button class="beat" data-b="${b.id}" data-cursor="dot">${b.label}</button>`).join('');
+$$('.beat').forEach(b=>b.onclick=()=>{
+  const id=b.dataset.b;
+  picked.has(id)?picked.delete(id):picked.add(id);
+  b.classList.toggle('on',picked.has(id));
+  const keys=[...STORIES.keys()];
+  order = picked.size
+    ? [...keys.filter(i=>picked.has(STORIES[i].beat)), ...keys.filter(i=>!picked.has(STORIES[i].beat))]
+    : keys;
+  buildReel(); renderBrief();
+});
+function renderBrief(){
+  const keys=[...STORIES.keys()];
+  const pool = picked.size ? keys.filter(i=>picked.has(STORIES[i].beat)) : keys;
+  const three = (pool.length?pool:keys).slice(0,3);
+  $('#briefTag').textContent = picked.size ? picked.size+' beats' : 'All beats';
+  $('#briefList').innerHTML = three.map((i,k)=>
+    `<li><span>0${k+1}</span><p>${STORIES[i].t}</p></li>`).join('')
+    + `<li style="opacity:.55"><span>+</span><p style="font-family:var(--m);font-size:11px;letter-spacing:.1em;text-transform:uppercase">One vote. Thirty seconds. That's the whole thing.</p></li>`;
+}
+renderBrief();
+$('#mailGo').onclick=()=>{
+  const v=$('#mailIn').value.trim(), note=$('#mailNote');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){
+    note.textContent='That email is doing a bit. Try a real one.';
+    note.style.color='#FF8B6B';
+  }else{
+    note.textContent='Locked in. 9AM sharp, '+v.split('@')[0]+'.';
+    note.style.color='var(--mint)';
+    $('#mailIn').value='';
+  }
+  note.classList.add('on');
+};
+
+/* ═══ SIDECAR DEMO ══════════════════════════════════════════ */
+const page=$('#page'), pop=$('#pop'), tog=$('#tog');
+function radar(on){
+  page.classList.toggle('radar-on',on);
+  tog.classList.toggle('on',on);
+  $('#radarBtn').querySelector('span').textContent = on?'Turn off Ad Radar':'Turn on Ad Radar';
+  if(on&&!reduce){const s=$('#scan'); s.classList.remove('go'); void s.offsetWidth; s.classList.add('go');}
+}
+function popOpen(on){pop.classList.toggle('on',on); $('#extbtn').classList.toggle('buzz',on);}
+$('#radarBtn').onclick=()=>{const on=!page.classList.contains('radar-on'); radar(on); if(on) popOpen(true);};
+tog.onclick=()=>radar(!page.classList.contains('radar-on'));
+$('#popBtn').onclick=()=>popOpen(!pop.classList.contains('on'));
+$('#extbtn').onclick=()=>popOpen(!pop.classList.contains('on'));
+$$('.clipit').forEach(b=>b.onclick=e=>{
+  e.stopPropagation();
+  addSwipe({t:b.dataset.clip+' · some-publisher.com', cat:b.dataset.tag,
+    acc:b.dataset.tag==='Display'?'#5FE3C0':'#C9FF6B'}, b.closest('.adslot'));
+  popOpen(true);
+  b.textContent='Clipped ✓'; setTimeout(()=>b.textContent='Clip',1500);
+});
+new IntersectionObserver((es,o)=>es.forEach(e=>{
+  if(e.isIntersecting&&!reduce){setTimeout(()=>{radar(true);popOpen(true)},700);o.disconnect();}
+}),{threshold:.45}).observe($('#browser'));
+
+/* magnetic buttons */
+$$('.btn,.rb').forEach(b=>{
+  b.addEventListener('pointermove',e=>{
+    if(reduce) return;
+    const r=b.getBoundingClientRect();
+    b.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.18}px,${(e.clientY-r.top-r.height/2)*.28}px)`;
+  });
+  b.addEventListener('pointerleave',()=>b.style.transform='');
+});
+renderSwipe();
+</script>
+</body>
+</html>
